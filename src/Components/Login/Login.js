@@ -7,7 +7,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
-  const [login,setLogin] = useState(true)
+  const [login,setLogin] = useState(false)
+ 
   const navigate = useNavigate();
 
 
@@ -16,7 +17,8 @@ const Login = () => {
     email: "",
    firstName: '',
    lastName: '',
-    password: ""
+    password: "",
+    repPassword: ""
 })
 
 
@@ -45,7 +47,7 @@ const addData = (e) => {
     e.preventDefault();
     if (!login){
 
-    const { name, email, date, password } = inpval;
+    const { name, email,repPassword,  password } = inpval;
 
     if (name === "") {
         toast.error(' name field is requred!',{
@@ -59,15 +61,23 @@ const addData = (e) => {
          toast.error('plz enter valid email addres',{
             position: "top-center",
         });
-    } else if (date === "") {
-         toast.error('date field is requred',{
-            position: "top-center",
-        });
-    } else if (password === "") {
+        
+    }
+    else if (!email.includes(".com")) {
+      toast.error('plz enter valid email addres',{
+         position: "top-center",
+     });
+     
+ }  else if (password === "") {
          toast.error('password field is requred',{
             position: "top-center",
         });
-    } else if (password.length < 5) {
+    }
+    else if (password !== repPassword ) {
+      toast.error('password didnt matched',{
+         position: "top-center",
+     });
+ } else if (password.length < 5) {
          toast.error('password length greater five',{
             position: "top-center",
         });
@@ -78,6 +88,13 @@ const addData = (e) => {
         console.log('localStroage.getItem', localStorage.getItem('useryoutube'))
         // navigate('/home')
         setLogin(!login)
+        setInpval({
+        email: "",
+         firstName: '',
+         lastName: '',
+          password: "",
+          repPassword: ""
+      })
         toast.success('SignUp Succesfully', {
           position: "top-center",
       });
@@ -110,7 +127,14 @@ const addData = (e) => {
         if (getuserArr && getuserArr.length) {
             const userdata = JSON.parse(getuserArr);
             const userlogin = userdata.filter((el, k) => {
+              if(el.email === undefined){
+                toast.error('Login', {
+                  position: "top-center",
+              });
+              }else{
                 return el.email === email && el.password === password
+              }
+                
             });
               
             if (userlogin.length === 0) {
@@ -191,6 +215,7 @@ const addData = (e) => {
                   id="email"
                   type="email"
                   name="email"
+                  value={inpval.email}
                   className="
                     text-sm
                     placeholder-gray-500
@@ -206,8 +231,10 @@ const addData = (e) => {
                 />
               </div>
             </div>
-            {!login ?   <div className="flex space-x-1">
-            <div className="flex flex-col mb-5">
+            {!login ?   
+            
+            <div className="flex space-x-1">
+              <div className="flex flex-col mb-5">
               <label
                 for="firstName"
                 className="mb-1 text-xs tracking-wide text-gray-600"
@@ -234,13 +261,14 @@ const addData = (e) => {
                   id="firstName"
                   onChange={getdata}
                   type="text"
-                  name="First Name"
+                  value={inpval.firstName}
+                  name="firstName"
                   className="
                     text-sm
                     placeholder-gray-500
-                    pl-4
+                   pl-4
                     pr-4
-                    rounded-l-2xl
+                   rounded-l-2xl
                     border border-gray-400
                     w-full
                     py-2
@@ -277,6 +305,7 @@ const addData = (e) => {
                   id="lastName"
                   onChange={getdata}
                   type="text"
+                  value={inpval.lastName}
                   name="lastName"
                   className="
                     text-sm
@@ -326,6 +355,7 @@ const addData = (e) => {
                   id="password"
                   type="password"
                   name="password"
+                  value={inpval.password}
                   className="
                     text-sm
                     placeholder-gray-500
@@ -341,6 +371,54 @@ const addData = (e) => {
                 />
               </div>
             </div>
+            {!login? 
+            <div className="flex flex-col mb-6">
+              <label
+                for="repPassword"
+                className="mb-1 text-xs sm:text-sm tracking-wide text-gray-600"
+                >Repeat Password:</label
+              >
+              <div className="relative">
+                <div
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    absolute
+                    left-0
+                    top-0
+                    h-full
+                    w-10
+                    text-gray-400
+                  "
+                >
+                  <span>
+                    <i className="fas fa-lock text-blue-500"></i>
+                  </span>
+                </div>
+
+                <input
+                onChange={getdata}
+                  id="repPassword"
+                  type="password"
+                  value={inpval.repPassword}
+                  name="repPassword"
+                  className="
+                    text-sm
+                    placeholder-gray-500
+                    pl-10
+                    pr-4
+                    rounded-2xl
+                    border border-gray-400
+                    w-full
+                    py-2
+                    focus:outline-none focus:border-blue-400
+                  "
+                  placeholder="Enter your re-enter password"
+                />
+              </div>
+            </div>
+            : null}
 
             <div className="flex w-full">
               <button
